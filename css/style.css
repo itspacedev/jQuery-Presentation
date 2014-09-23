@@ -1,0 +1,155 @@
+body{
+	padding: 0;
+	margin: 0;
+}
+table{
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+table#demo td{
+	padding: 20px;
+}
+table#demo tr+tr td{
+	padding-top: 0;
+}
+#view{
+	position: relative;
+	display: block;
+	width: 960px;
+	margin: 0 auto;
+	
+	background-color: #f8f8f8;
+	border-left: 1px solid #c3c0c9;
+	border-right: 1px solid #c3c0c9;
+}
+
+/* Presentation */
+.present{
+	background: #ccc;
+}
+.present__header{
+	position: relative;
+	display: block;
+	padding: 5px;
+	
+	font-size: 14px;
+	line-height: 24px;
+}
+.present__mwrap{
+	position: relative;
+}
+.present__slides{
+	/*
+	position: relative;
+	display: inline-block;
+	*/
+	
+	position: absolute;
+	display: block;
+	visibility: hidden;
+	top: 0; left: 0;
+	
+	background: rgba(0,0,0, 0.3);
+	
+	overflow-y: scroll;
+	z-index: 100;
+}
+.present__slides:hover{
+	background: rgba(0,0,0, 0.8);
+}
+.present__slide__handler{
+	position: relative;
+	display: block;
+	padding: 0;
+	margin: 5px;
+	/*background: blue;*/
+	
+	overflow: hidden;
+}
+.present__slide__handler img{
+	position: absolute;
+	display: block;
+	height: 100%;
+	
+	top: 0; left: 0; 
+	opacity: 0.5;
+}
+.present__slide__handler.selected{
+	/*background: orange;*/
+}
+.present__slide__handler:hover img{
+	opacity: 0.8;
+}
+.present__slide__handler.selected img, present__slide__handler.selected:hover img{
+	opacity: 1;
+}
+.present__slide__handler+.present__slide__handler{
+	margin-top: 0;
+}
+.present__view{
+	position: relative;
+	display: inline-block;
+	
+	/*background: red;*/
+}
+.present__button{
+	position: absolute;
+	display: none;
+	padding: 10px;
+	
+	width: 20px; height: 20px;
+	
+	background-color: rgba(0,0,0, 0.4);
+	
+	color: white;
+	font-face: Tahoma, sans-serif;
+	font-weight: bold;
+	font-size: 14px;
+	line-height: 24px;
+	text-decoration: none;
+	text-align: center;
+	
+	border-radius: 3px;
+}
+.present__button.pb__prev{
+	top: 50%;
+	margin-top: -20px;
+	right: 60px;
+}
+.present__button.pb__play{
+	padding: 20px;
+	font-size: 24px;
+	top: 50%; margin-top: -30px;
+	left: 50%; margin-left: -30px;
+}
+.present__button.pb__next{
+	top: 50%; margin-top: -20px;
+	right: 10px;
+}
+.present__mwrap:hover .present__slides{
+	visibility: visible;
+}
+.present__view:hover .present__button{
+	display: block;
+}
+.present__button:hover{
+	background-color: rgba(0,0,0, 0.6);
+}
+.present__slide{
+	position: absolute;
+	display: block;
+	width: 100%;
+	height: 100%;
+	
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+.present__slide img{
+	position: absolute;
+	display: block;
+	top: 0;
+	left: 0;
+	height: 100%;
+}
