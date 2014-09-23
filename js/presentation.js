@@ -1,12 +1,17 @@
 jQuery(document).ready(function(){
 // Presentation Plugin for jQuery
 	var preApi = window.preApi = {
+	// Presentation Index	
 		i:-1,
+		
+	// Settings Cache	
 		settings: [],
+		
+	// Default Settings	
 		defaultSettings:{
 			id: 0,
 			elm: null,
-			title: 'Default Title',
+			title: 'Presentation',
 			slides: [],
 			delay: 3,
 			timeout: null,
@@ -14,51 +19,53 @@ jQuery(document).ready(function(){
 			status: 0
 		},
 		
+	// Method: Init presentation
+	// @elm - elm to replace
+	// @options - presentation options
 		init: function(elm, options){
 			var id = ++window.preApi.i;
-			window.preApi.settings[id] = jQuery.extend({}, window.preApi.defaultSettings, options, {
+			this.settings[id] = jQuery.extend({}, this.defaultSettings, options, {
 				id: id,
 				elm: jQuery(elm),
-				slides: window.preApi.make_slides()
+				slides: this.make_slides()
 			});
-			window.preApi.make_html(id);
+			this.make_html(id);
 		},
 		
+	// Method: Make html code of presentation
+	// @id - id presentation
 		make_html: function(id){
-			var s = window.preApi.settings[id], t='',
-			origSize = window.preApi.getSize(s.elm),
-			pSize = window.preApi.calc(id, origSize);
+			var s = this.settings[id], t='',
+			origSize = this.getSize(s.elm),
+			pSize = this.calc(id, origSize);
 			
-			//if(s.slides.length > 0){
-				t += '<div id="present_'+id+'" class="present" style="visibility:hidden;">';
-					t += '<div class="present__header">';
-						t += s.title;
+			t += '<div id="present_'+id+'" class="present" style="visibility:hidden;">';
+				t += '<div class="present__header">';
+					t += s.title + (id+1);
+				t += '</div>';
+				t += '<div class="present__mwrap">';
+					t += '<div class="present__slides">';
+						jQuery.each(s.slides, function(si, slide){
+							t += '<a id="ph_'+id+'_'+si+'" class="present__slide__handler'+((si==0)?' selected':'')+'" href="javascript:{}" style="display:block;" onClick="javascript:{return window.preApi.show_slide('+id+', '+si+');};">';
+								//t += 'Slide '+(si+1);
+								t += '<img src="'+slide.image+'"/>';
+							t += '</a>';
+						});
 					t += '</div>';
-					t += '<div class="present__mwrap">';
-						t += '<div class="present__slides">';
-							jQuery.each(s.slides, function(si, slide){
-								t += '<a id="ph_'+id+'_'+si+'" class="present__slide__handler'+((si==0)?' selected':'')+'" href="javascript:{}" style="display:block;" onClick="javascript:{return window.preApi.show_slide('+id+', '+si+');};">';
-									//t += 'Slide '+(si+1);
-									t += '<img src="'+slide.image+'"/>';
-								t += '</a>';
-							});
-						t += '</div>';
-						t += '<div class="present__view">';
-							jQuery.each(s.slides, function(si, slide){
-								t += '<div id="ps_'+id+'_'+si+'" class="present__slide"'+((si>0)?' style="display:none;"':'')+'>';
-									t += '<img src="'+slide.image+'"/>';
-								t += '</div>';
-							});
-							t += '<a href="javascript:{}" class="present__button pb__prev" onClick="javascript:{return window.preApi.prev('+id+')}">&larr;</a>';
-							t += '<a href="javascript:{}" class="present__button pb__play" onClick="javascript:{return window.preApi.play('+id+')}">&#9658;</a>';
-							t += '<a href="javascript:{}" class="present__button pb__next" onClick="javascript:{return window.preApi.next('+id+')}">&rarr;</a>';
-						t += '</div>';
+					t += '<div class="present__view">';
+						jQuery.each(s.slides, function(si, slide){
+							t += '<div id="ps_'+id+'_'+si+'" class="present__slide"'+((si>0)?' style="display:none;"':'')+'>';
+								t += '<img src="'+slide.image+'"/>';
+							t += '</div>';
+						});
+						t += '<a href="javascript:{}" class="present__button pb__prev" onClick="javascript:{return window.preApi.prev('+id+')}">&larr;</a>';
+						t += '<a href="javascript:{}" class="present__button pb__play" onClick="javascript:{return window.preApi.play('+id+')}">&#9658;</a>';
+						t += '<a href="javascript:{}" class="present__button pb__next" onClick="javascript:{return window.preApi.next('+id+')}">&rarr;</a>';
 					t += '</div>';
 				t += '</div>';
-				
-			//}
+			t += '</div>';
 			
-			window.preApi.settings[id].elm.replaceWith(t);
+			this.settings[id].elm.replaceWith(t);
 			var pElm = jQuery('#present_'+id),
 			pElmWrap = pElm.find('.present__mwrap'),
 			pElmSlides = pElmWrap.find('.present__slides'),
@@ -91,8 +98,11 @@ jQuery(document).ready(function(){
 				height: pSize.box.height,
 				visibility: 'visible'
 			});
-			window.preApi.settings[id].pElm = pElm;
+			this.settings[id].pElm = pElm;
 		},
+		
+	// Method: Get size of element
+	// @elm - element
 		getSize: function(elm){
 			elm = jQuery(elm);
 			return {
@@ -101,6 +111,9 @@ jQuery(document).ready(function(){
 			};
 		},
 		
+	// Method: Calculate sizes for presentation
+	// @id - id presentation
+	// @size - size of original element
 		calc: function(id, size){
 			var h = (size.width / (4/3));
 			return {
@@ -118,6 +131,9 @@ jQuery(document).ready(function(){
 				}
 			};
 		},
+		
+	// Method: Generate slides fro presentation
+	// Method for showing demo
 		make_slides: function(){
 			var slides = [];
 			for(var i = 0; i<= 4; i++){
@@ -129,52 +145,61 @@ jQuery(document).ready(function(){
 			return slides;
 		},
 		
+	// Method: Play 
+	// @id - id presentation
 		play: function(id){
-			if(window.preApi.settings[id].status == 0){
-				if(window.preApi.settings[id].slide_id == 0 || window.preApi.settings[id].slide_id == (window.preApi.settings[id].slides.length -1)){
-					window.preApi.settings[id].pElm.find('.present__slide').hide();
+			var status = this.settings[id].status;
+			
+			if(status == 0){
+				if(this.settings[id].slide_id == 0 || this.settings[id].slide_id == (this.settings[id].slides.length -1)){
+					this.settings[id].pElm.find('.present__slide').hide();
 					jQuery('#ps_'+id+'_0').show();
-				
-					window.preApi.settings[id].slide_id = 0;
+					this.settings[id].slide_id = 0;
 				}
-				
-				window.preApi.set_status(id, 1);
-				window.preApi.timeout_set(id, window.preApi.settings[id].slide_id);
-				
-				window.preApi.highlight_handler(id, window.preApi.settings[id].slide_id);
+				this.set_status(id, 1);
+				this.timeout_set(id, this.settings[id].slide_id);
+				this.highlight_handler(id, this.settings[id].slide_id);
 
-			}else if(window.preApi.settings[id].status == 1){
-				window.preApi.set_status(id, 2);
-				window.preApi.timeout_delit(id);
-			}else if(window.preApi.settings[id].status == 2){
-				window.preApi.set_status(id, 1);
-				window.preApi.timeout_delit(id);
-				window.preApi.timeout_set(id, window.preApi.settings[id].slide_id);
+			}else if(status == 1){
+				this.set_status(id, 2);
+				this.timeout_delit(id);
+				
+			}else if(status == 2){
+				this.set_status(id, 1);
+				this.timeout_delit(id);
+				this.timeout_set(id, this.settings[id].slide_id);
 			}
 		},
 		
+	// Method: Next slide
+	// @id - id presentation
 		next: function(id){
-			var s = window.preApi.settings[id], slides_count = s.slides.length,
+			var s = this.settings[id], slides_count = s.slides.length,
 			old_slide = s.slide_id, new_slide = (old_slide+1);
 			if(new_slide > (slides_count - 1)){
 				return;
 			}else{
-				window.preApi.show_slide(id, new_slide);
+				this.show_slide(id, new_slide);
 			}
 		},
 		
+	// Method: Prev slide
+	// @id - id presentation
 		prev: function(id){
-			var s = window.preApi.settings[id],
+			var s = this.settings[id],
 			old_slide = s.slide_id, new_slide = (old_slide-1);
 			if(new_slide == -1){
 				return;
 			}else{
-				window.preApi.show_slide(id, new_slide);
+				this.show_slide(id, new_slide);
 			}
 		},
 		
+	// Method: Highlight slide handler
+	// @id - id presentation
+	// @slide - id slide
 		highlight_handler: function(id, slide){
-			var pElm = window.preApi.settings[id].pElm;
+			var pElm = this.settings[id].pElm;
 			pElm.find('.present__slide__handler').removeClass('selected');
 			
 			jQuery('#ph_'+id+'_'+slide).addClass('selected');
@@ -182,49 +207,60 @@ jQuery(document).ready(function(){
 				scrollTop: (window.preApi.settings[id].handlerHeight * slide)
 			}, 500);
 		},
-		
+	
+	// Method: Show slide
+	// @id - id presentation
+	// @slide - id slide in @id presentation
 		show_slide: function(id, slide){
-			var s = window.preApi.settings[id];
+			var s = this.settings[id];
 			var s_old = jQuery('#ps_'+id+'_'+s.slide_id),  s_new = jQuery('#ps_'+id+'_'+slide);
 			s_old.hide();
 			s_new.show();
 			
-			window.preApi.highlight_handler(id, slide);
+			this.highlight_handler(id, slide);
 			
-			if(window.preApi.settings[id].status == 1){
+			if(s.status == 1){
 				if(slide > s.slide_id){	
-					window.preApi.timeout_set(id, slide);
+					this.timeout_set(id, slide);
 				}
 				if(slide == (s.slides.length-1)){
-					window.preApi.set_status(id, 0);
+					this.set_status(id, 0);
 				}
 			}
-			window.preApi.settings[id].slide_id = slide;
+			this.settings[id].slide_id = slide;
 		},
-		
+	
+	// Method: Set status
+	// @id - id presentation
+	// @status - new status to set
+	// @status: 
+	// 0 - stop
+	// 1 - playing
+	// 2 - paused
 		set_status: function(id, status){
-			// status
-			// 0 - stop
-			// 1 - playing
-			//console.log('set status '+status+' for '+id);
-			window.preApi.settings[id].status = status;
+			this.settings[id].status = status;
 			var bhtml = '&#9658;';
 			if(status == 1){
 				bhtml = 'll';
 			}
-			window.preApi.settings[id].pElm.find('.pb__play').html(bhtml);
+			this.settings[id].pElm.find('.pb__play').html(bhtml);
 		},
-		
+	
+	// Method: Set timeout for showing next slide
+	// @id - id presentation
+	// @slide - current slide	
 		timeout_set: function(id, slide){
-			window.preApi.timeout_delit(id);
+			this.timeout_delit(id);
 			
-			window.preApi.settings[id].timeout = setTimeout(function(){
+			this.settings[id].timeout = setTimeout(function(){
 				window.preApi.next(id);
-			}, 1000 * (window.preApi.settings[id].slides[slide].delay || window.preApi.settings[id].delay));
+			}, 1000 * (this.settings[id].slides[slide].delay || this.settings[id].delay));
 		},
-		
+	
+	// Method: Clear timeout
+	// @id - id presentation	
 		timeout_delit: function(id){
-			clearTimeout(window.preApi.settings[id].timeout);
+			clearTimeout(this.settings[id].timeout);
 		}
 		
 	};

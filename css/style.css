@@ -25,15 +25,18 @@ table#demo tr+tr td{
 
 /* Presentation */
 .present{
-	background: #ccc;
+	/*background: #ccc;*/
 }
 .present__header{
 	position: relative;
 	display: block;
-	padding: 5px;
+	padding: 5px 5px 5px 10px;
 	
 	font-size: 14px;
 	line-height: 24px;
+	
+	background: #e2e2e2;
+	border-radius: 3px 3px 0 0;
 }
 .present__mwrap{
 	position: relative;
